@@ -1,0 +1,68 @@
+@page
+@model NBADATA.Pages.CompareModel
+@{
+    ViewData["Title"] = Model.mode == "profile" ? "Perfil" : "Comparación";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="row row-cols-1 row-cols-md-2 g-3">
+    <div class="col">
+        <div class="card p-3">
+            <h4>@Model.A.FullName</h4>
+            <p>@Model.A.Team — @Model.A.Position</p>
+            @if (Model.mode == "profile")
+            {
+            <ul>
+                <li>Altura: @Model.A.HeightCm cm</li>
+                <li>Peso: @Model.A.WeightKg kg</li>
+                <li>Nacimiento: @Model.A.BirthDate:dd/MM/yyyy</li>
+            </ul>
+            }
+            else
+            {
+            <table class="table table-sm">
+                <tr><th>PTS</th><td>@Model.A.Pts</td></tr>
+                <tr><th>REB</th><td>@Model.A.Reb</td></tr>
+                <tr><th>AST</th><td>@Model.A.Ast</td></tr>
+                <tr><th>STL</th><td>@Model.A.Stl</td></tr>
+                <tr><th>BLK</th><td>@Model.A.Blk</td></tr>
+                <tr><th>TOV</th><td>@Model.A.Tov</td></tr>
+                <tr><th>FG%</th><td>@(Model.A.FgPct*100:0.0)%</td></tr>
+                <tr><th>3P%</th><td>@(Model.A.TpPct*100:0.0)%</td></tr>
+                <tr><th>FT%</th><td>@(Model.A.FtPct*100:0.0)%</td></tr>
+            </table>
+            }
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card p-3">
+            <h4>@Model.B.FullName</h4>
+            <p>@Model.B.Team — @Model.B.Position</p>
+            @if (Model.mode == "profile")
+            {
+            <ul>
+                <li>Altura: @Model.B.HeightCm cm</li>
+                <li>Peso: @Model.B.WeightKg kg</li>
+                <li>Nacimiento: @Model.B.BirthDate:dd/MM/yyyy</li>
+            </ul>
+            }
+            else
+            {
+            <table class="table table-sm">
+                <tr><th>PTS</th><td>@Model.B.Pts</td></tr>
+                <tr><th>REB</th><td>@Model.B.Reb</td></tr>
+                <tr><th>AST</th><td>@Model.B.Ast</td></tr>
+                <tr><th>STL</th><td>@Model.B.Stl</td></tr>
+                <tr><th>BLK</th><td>@Model.B.Blk</td></tr>
+                <tr><th>TOV</th><td>@Model.B.Tov</td></tr>
+                <tr><th>FG%</th><td>@(Model.B.FgPct*100:0.0)%</td></tr>
+                <tr><th>3P%</th><td>@(Model.B.TpPct*100:0.0)%</td></tr>
+                <tr><th>FT%</th><td>@(Model.B.FtPct*100:0.0)%</td></tr>
+            </table>
+            }
+        </div>
+    </div>
+</div>
+
+<a class="btn btn-outline-secondary mt-3" asp-page="/Players/Index">Volver</a>
