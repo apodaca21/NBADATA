@@ -19,8 +19,16 @@ namespace NBADATA.Pages
         [BindProperty(SupportsGet = true, Name = "ids")]
         public string? IdsRaw { get; set; }
 
-        public int[] SelectedIds { get; private set; } = Array.Empty<int>();
-        public List<Player> Players { get; private set; } = new();
+    [BindProperty(SupportsGet = true, Name = "player1")]
+    public string? Player1 { get; set; }
+
+    [BindProperty(SupportsGet = true, Name = "player2")]
+    public string? Player2 { get; set; }
+
+    public int[] SelectedIds { get; private set; } = Array.Empty<int>();
+    public List<Player> Players { get; private set; } = new();
+    public Player? Result1 { get; private set; }
+    public Player? Result2 { get; private set; }
         public List<PropertyInfo> Props { get; private set; } = new();
         public string DebugMsg { get; private set; } = "";
 
@@ -29,16 +37,33 @@ namespace NBADATA.Pages
             SelectedIds = ParseIds(IdsRaw);
             DebugMsg = $"IdsRaw='{IdsRaw}' -> {SelectedIds.Length} ids: [{string.Join(",", SelectedIds)}]";
 
-            if (SelectedIds.Length == 0)
+            if (SelectedIds.Length > 0)
             {
-                return;
+                Players = await _db.Set<Player>()
+                                   .Where(p => SelectedIds.Contains(p.Id))
+                                   .ToListAsync();
+                DebugMsg += $" | Players found: {Players.Count}";
             }
 
-            Players = await _db.Set<Player>()
-                               .Where(p => SelectedIds.Contains(p.Id))
-                               .ToListAsync();
+            if (!string.IsNullOrWhiteSpace(Player1))
+            {
+                var term = Player1.Trim();
+                Result1 = await _db.Players
+                                    .Where(p => EF.Functions.Like(p.FullName, $"%{term}%"))
+                                    .FirstOrDefaultAsync();
+                if (Result1 != null && !Players.Any(p => p.Id == Result1.Id)) Players.Add(Result1);
+                DebugMsg += $" | Player1='{term}' -> {(Result1 != null ? Result1.FullName : "(not found)")}";
+            }
 
-            DebugMsg += $" | Players found: {Players.Count}";
+            if (!string.IsNullOrWhiteSpace(Player2))
+            {
+                var term = Player2.Trim();
+                Result2 = await _db.Players
+                                    .Where(p => EF.Functions.Like(p.FullName, $"%{term}%"))
+                                    .FirstOrDefaultAsync();
+                if (Result2 != null && !Players.Any(p => p.Id == Result2.Id)) Players.Add(Result2);
+                DebugMsg += $" | Player2='{term}' -> {(Result2 != null ? Result2.FullName : "(not found)")}";
+            }
 
             var t = typeof(Player);
             Props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance)

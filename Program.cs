@@ -4,13 +4,14 @@ using NBADATA.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Servicios
 builder.Services.AddDbContext<NBADbContext>(opt =>
     opt.UseInMemoryDatabase("nba"));
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
+
+// Agregamos juadores de ejemplo
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<NBADbContext>();
@@ -33,9 +34,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.MapRazorPages();
 
 app.Run();
