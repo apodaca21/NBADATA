@@ -1,29 +1,83 @@
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using NBADATA.Data;
-using NBADATA.Models;
 
-namespace NBADATA.Pages;
+// ✅ Ajusta estos using si tu DbContext/Model están en otros namespaces
+using NBADATA.Models;   // Player
+using NBADATA.Data;     // AppDbContext
 
-public class CompareModel : PageModel
+namespace NBADATA.Pages
 {
-    private readonly NBADbContext _db;
-    public CompareModel(NBADbContext db) => _db = db;
-
-    public Player A { get; set; } = null!;
-    public Player B { get; set; } = null!;
-    [BindProperty(SupportsGet = true)] public string mode { get; set; } = "stats";
-
-    public async Task<IActionResult> OnGetAsync(string ids, string? mode = "stats")
+    public class CompareModel : PageModel
     {
-        this.mode = mode ?? "stats";
-        var parts = ids?.Split(',')?.Select(int.Parse).ToArray();
-        if (parts is null || parts.Length != 2) return RedirectToPage("/Players/Index");
+        private readonly AppDbContext _db; // ⬅️ Cambia al nombre real de tu DbContext
 
-        var players = await _db.Players.Where(p => parts.Contains(p.Id)).ToListAsync();
-        if (players.Count != 2) return RedirectToPage("/Players/Index");
-        A = players[0]; B = players[1];
-        return Page();
+        public CompareModel(AppDbContext db) => _db = db;
+
+        [BindProperty(SupportsGet = true)]
+        public string? Mode { get; set; } = "basic";
+
+        // Lee el querystring "ids"
+        [BindProperty(SupportsGet = true, Name = "ids")]
+        public string? IdsRaw { get; set; }
+
+        public int[] SelectedIds { get; private set; } = Array.Empty<int>();
+        public List<Player> Players { get; private set; } = new();
+        public List<PropertyInfo> Props { get; private set; } = new();
+        public string DebugMsg { get; private set; } = "";
+
+        public async Task OnGet()
+        {
+            SelectedIds = ParseIds(IdsRaw);
+            DebugMsg = $"IdsRaw='{IdsRaw}' -> {SelectedIds.Length} ids: [{string.Join(",", SelectedIds)}]";
+
+            if (SelectedIds.Length == 0)
+            {
+                return;
+            }
+
+            // ⬇️ Si tu PK no es "Id", cámbialo por "PlayerId" o el que uses.
+            Players = await _db.Set<Player>()
+                               .Where(p => SelectedIds.Contains(p.Id))
+                               .ToListAsync();
+
+            DebugMsg += $" | Players found: {Players.Count}";
+
+            // Propiedades simples para comparar (evita navegación/colecciones)
+            var t = typeof(Player);
+            Props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                     .Where(p =>
+                        IsSimple(p.PropertyType) &&
+                        p.Name != "Id") // excluye PK de la tabla
+                     .OrderBy(p => p.Name)
+                     .ToList();
+        }
+
+        private static int[] ParseIds(string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return Array.Empty<int>();
+
+            return raw.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                      .Select(s => s.Trim())
+                      .Select(s => int.TryParse(s, out var n) ? n : (int?)null)
+                      .Where(n => n.HasValue)
+                      .Select(n => n!.Value)
+                      .Distinct()
+                      .ToArray();
+        }
+
+        private static bool IsSimple(Type t)
+        {
+            t = Nullable.GetUnderlyingType(t) ?? t;
+            return t.IsPrimitive
+                || t.IsEnum
+                || t == typeof(string)
+                || t == typeof(decimal)
+                || t == typeof(double)
+                || t == typeof(float)
+                || t == typeof(DateTime)
+                || t == typeof(Guid);
+        }
     }
 }

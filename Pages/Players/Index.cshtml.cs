@@ -13,6 +13,7 @@ public class IndexModel : PageModel
 
     public List<Player> Players { get; set; } = new();
     [BindProperty(SupportsGet = true)] public string? q { get; set; }
+    [BindProperty(SupportsGet = true)] public string? error { get; set; }
 
     public async Task OnGetAsync()
     {

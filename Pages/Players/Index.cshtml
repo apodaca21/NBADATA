@@ -1,33 +1,58 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using NBADATA.Data;
-using NBADATA.Models;
+@page
+@model NBADATA.Pages.Players.IndexModel
+@{
+    ViewData["Title"] = "Players";
+}
 
-namespace NBADATA.Pages.Players;
+<h2>Players</h2>
 
-public class IndexModel : PageModel
-{
-    private readonly NBADbContext _db;
-    public IndexModel(NBADbContext db) => _db = db;
-
-    public List<Player>
-    Players { get; set; } = new();
-    [BindProperty(SupportsGet = true)] public string? q { get; set; }
-
-    public async Task OnGetAsync()
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input class="form-control" type="text" name="q" value="@Model.q" placeholder="Buscar por nombre o equipo" />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" type="submit">Buscar</button>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.error))
     {
-    var query = _db.Players.AsQueryable();
-    if (!string.IsNullOrWhiteSpace(q))
-    query = query.Where(p => p.FullName.Contains(q) || p.Team.Contains(q));
-    Players = await query.OrderBy(p => p.FullName).ToListAsync();
+    <div class="col-12 text-danger">@Model.error</div>
     }
+</form>
 
-    public IActionResult OnPostCompare([FromForm] int[] selected, [FromForm] string mode)
-    {
-    if (selected.Length != 2)
-    return RedirectToPage(new { q, error = "Selecciona exactamente 2 jugadores" });
+<form method="post" asp-page-handler="Compare">
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Equipo</th>
+                    <th>Pos</th>
+                    <th>PTS</th>
+                    <th>REB</th>
+                    <th>AST</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.Players)
+            {
+                <tr>
+                    <td><input type="checkbox" name="selected" value="@p.Id" /></td>
+                    <td>@p.FullName</td>
+                    <td>@p.Team</td>
+                    <td>@p.Position</td>
+                    <td>@p.Pts</td>
+                    <td>@p.Reb</td>
+                    <td>@p.Ast</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 
-    return RedirectToPage("/Compare", new { ids = string.Join(",", selected), mode });
-    }
-    }
+    <div class="d-flex gap-2">
+        <input type="hidden" name="mode" value="stats" />
+        <button class="btn btn-outline-primary" type="submit" onclick="this.form.mode.value='stats'">Comparar (Stats)</button>
+        <button class="btn btn-outline-secondary" type="submit" onclick="this.form.mode.value='profile'">Comparar (Perfil)</button>
+    </div>
+</form>
