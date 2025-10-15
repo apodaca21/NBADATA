@@ -1,9 +1,9 @@
 @page
 @model NBADATA.Pages.CompareModel
 
+@*Pagina para comparar dos jugadores*@
 <h2>Comparar jugadores</h2>
 
-@* Dos formularios de busqueda, recibiendo nombres  *@
 <form method="get" class="row g-2 mb-4">
     <div class="col-auto">
         <input class="form-control" name="player1" placeholder="Jugador 1 (nombre o parte)" value="@Model.Player1" />
@@ -26,6 +26,11 @@
         }
         else
         {
+                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl1))
+                {
+                    <img src="@Model.PhotoUrl1" alt="@Model.Result1.FullName" class="player-photo img-fluid mb-3" onerror="this.style.display='none'" />
+                }
+
             <table class="table table-striped">
                 <tbody>
                     @foreach (var prop in Model.Props)
@@ -38,7 +43,7 @@
                             decimal d => d.ToString("0.##"),
                             double d2 => d2.ToString("0.##"),
                             float f => f.ToString("0.##"),
-                            _ => val.ToString() ?? "-"
+                            _ => val?.ToString() ?? "-"
                         };
                         <tr>
                             <th>@prop.Name</th>
@@ -51,12 +56,18 @@
     </div>
     <div class="col-md-6">
         <h4>Jugador 2</h4>
+
         @if (Model.Result2 == null)
         {
             <div class="alert alert-warning">No se encontró Jugador 2</div>
         }
         else
         {
+                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl2))
+                {
+                    <img src="@Model.PhotoUrl2" alt="@Model.Result2.FullName" class="player-photo img-fluid mb-3" onerror="this.style.display='none'" />
+                }
+
             <table class="table table-striped">
                 <tbody>
                     @foreach (var prop in Model.Props)
@@ -69,7 +80,7 @@
                             decimal d => d.ToString("0.##"),
                             double d2 => d2.ToString("0.##"),
                             float f => f.ToString("0.##"),
-                            _ => val.ToString() ?? "-"
+                            _ => val?.ToString() ?? "-"
                         };
                         <tr>
                             <th>@prop.Name</th>

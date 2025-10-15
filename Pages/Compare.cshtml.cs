@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +12,9 @@ namespace NBADATA.Pages
     public class CompareModel : PageModel
     {
     private readonly NBADbContext _db;
+    private readonly IWebHostEnvironment _env;
 
-    public CompareModel(NBADbContext db) => _db = db;
+    public CompareModel(NBADbContext db, IWebHostEnvironment env) => (_db, _env) = (db, env);
 
         [BindProperty(SupportsGet = true)]
         public string? Mode { get; set; } = "basic";
@@ -31,6 +34,8 @@ namespace NBADATA.Pages
     public Player? Result2 { get; private set; }
         public List<PropertyInfo> Props { get; private set; } = new();
         public string DebugMsg { get; private set; } = "";
+        public string? PhotoUrl1 { get; private set; }
+        public string? PhotoUrl2 { get; private set; }
 
         public async Task OnGet()
         {
@@ -72,6 +77,55 @@ namespace NBADATA.Pages
                         p.Name != "Id") // excluye PK de la tabla
                      .OrderBy(p => p.Name)
                      .ToList();
+            DeterminePhotoUrls();
+        }
+
+        private void DeterminePhotoUrls()
+        {
+            PhotoUrl1 = FindPhotoUrl(Result1);
+            PhotoUrl2 = FindPhotoUrl(Result2);
+        }
+
+        // LOGICA PARA ENCONTRAR FOTO DE JUGADOR
+        private string? FindPhotoUrl(Player? p)
+        {
+            if (p == null) return null;
+            // localizacion de la carpeta wwwroot/images
+            var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var imagesDir = Path.Combine(webRoot, "images");
+            // funcion para normalizar los nombres (eliminar espacios y caracteres no alfanumericos)
+            string Normalize(string name)
+            {
+                var sb = new System.Text.StringBuilder();
+                foreach (var ch in name)
+                {
+                    if (char.IsLetterOrDigit(ch)) sb.Append(ch);
+                }
+                return sb.ToString();
+            }
+            // posibles nombres de los archivos
+            var candidates = new List<string>();
+            // por si los buscamos por su id
+            candidates.Add($"{p.Id}.jpg");
+            candidates.Add($"{p.Id}.png");
+            // por si los buscamos por su nombre
+            var nameNoSpaces = Normalize(p.FullName);
+            candidates.Add(nameNoSpaces + ".png");
+            candidates.Add(nameNoSpaces + ".jpg");
+            // por si los buscamos por su nombre en minusculas
+            candidates.Add(nameNoSpaces.ToLowerInvariant() + ".png");
+            candidates.Add(nameNoSpaces.ToLowerInvariant() + ".jpg");
+
+            foreach (var file in candidates)
+            {
+                var path = Path.Combine(imagesDir, file);
+                if (System.IO.File.Exists(path))
+                {
+                    return "/images/" + file;
+                }
+            }
+
+            return null;
         }
 
         private static int[] ParseIds(string? raw)

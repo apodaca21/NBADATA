@@ -1,0 +1,8 @@
+.player-photo {
+  width: 10px;          
+  height: 10px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 0.75rem;
+}
