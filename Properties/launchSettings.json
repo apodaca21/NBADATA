@@ -3,8 +3,8 @@
     "NBADATA": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5278;https://localhost:7278",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:7278",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

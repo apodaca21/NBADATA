@@ -1,0 +1,32 @@
+/* ESTILO DE LA HOME PAGE */
+html, body, .home-hero {
+	height: 100%;
+}
+
+.home-hero {
+  min-height: 80vh;
+  padding: 4rem 1rem;
+  background:
+    linear-gradient(rgba(13,110,253,0.13), rgba(37,140,251,0.07)),
+    url('/images/wallpaperHOME.jpg') center/cover no-repeat;
+}
+
+.hero-title {
+	font-size: 3rem;
+	font-weight: 700;
+	color: #ffffff;
+	margin-left:-800px; margin-top:-300px;
+}
+
+.hero-sub {
+	color: #555;
+	font-size: 1.125rem;
+    margin-left:-615px; margin-top:-10px;
+}
+
+.btn-start {
+	padding: 0.5rem 2rem;
+	font-size: 1.125rem;
+	border-radius: 999px;
+    margin-left:-400px; margin-top:-180px;
+}

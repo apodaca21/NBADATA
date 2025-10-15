@@ -11,7 +11,6 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// (Opcional pero útil) Semilla de datos para probar la página de Players
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<NBADbContext>();

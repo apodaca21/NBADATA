@@ -1,10 +1,19 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "NBA DATA";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<div class="home-hero d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <h1 class="hero-title">NBA DATA</h1>
+        <p class="hero-sub">Busca y compara estadísticas de jugadores de la NBA</p>
+        <p class="mt-4">
+            <a class="btn btn-lg btn-primary btn-start" href="/Compare">EMPEZAR</a>
+        </p>
+    </div>
 </div>

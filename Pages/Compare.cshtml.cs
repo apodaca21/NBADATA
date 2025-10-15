@@ -2,23 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-
-// ✅ Ajusta estos using si tu DbContext/Model están en otros namespaces
-using NBADATA.Models;   // Player
-using NBADATA.Data;     // AppDbContext
+using NBADATA.Models;
+using NBADATA.Data;    
 
 namespace NBADATA.Pages
 {
     public class CompareModel : PageModel
     {
-        private readonly AppDbContext _db; // ⬅️ Cambia al nombre real de tu DbContext
+    private readonly NBADbContext _db;
 
-        public CompareModel(AppDbContext db) => _db = db;
+    public CompareModel(NBADbContext db) => _db = db;
 
         [BindProperty(SupportsGet = true)]
         public string? Mode { get; set; } = "basic";
 
-        // Lee el querystring "ids"
         [BindProperty(SupportsGet = true, Name = "ids")]
         public string? IdsRaw { get; set; }
 
@@ -37,14 +34,12 @@ namespace NBADATA.Pages
                 return;
             }
 
-            // ⬇️ Si tu PK no es "Id", cámbialo por "PlayerId" o el que uses.
             Players = await _db.Set<Player>()
                                .Where(p => SelectedIds.Contains(p.Id))
                                .ToListAsync();
 
             DebugMsg += $" | Players found: {Players.Count}";
 
-            // Propiedades simples para comparar (evita navegación/colecciones)
             var t = typeof(Player);
             Props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                      .Where(p =>
