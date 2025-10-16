@@ -1,32 +1,64 @@
 /* ESTILO DE LA HOME PAGE */
-html, body, .home-hero {
-	height: 100%;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.main-content {
+    position: relative;
+    min-height: calc(100vh + 20px);
+    width: 100%;
+    margin-top: -80px;
+    overflow: hidden;
+}
+
+.main-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        linear-gradient(rgba(13,110,253,0.13), rgba(37,140,251,0.07)),
+        url('/images/wallpaperHOME.jpg') center/cover no-repeat;
+    background-attachment: fixed;
+    opacity: 1; /* Ajusta la opacidad si quieres un overlay más fuerte */
 }
 
 .home-hero {
-  min-height: 80vh;
-  padding: 4rem 1rem;
-  background:
-    linear-gradient(rgba(13,110,253,0.13), rgba(37,140,251,0.07)),
-    url('/images/wallpaperHOME.jpg') center/cover no-repeat;
+    position: relative;
+    z-index: 1; /* Asegura que el contenido esté sobre el fondo */
+    min-height: calc(100vh - 135px);
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .hero-title {
 	font-size: 3rem;
 	font-weight: 700;
 	color: #ffffff;
-	margin-left:-800px; margin-top:-300px;
+	margin-left:-1050px; margin-top:0px;
 }
 
 .hero-sub {
 	color: #555;
 	font-size: 1.125rem;
-    margin-left:-615px; margin-top:-10px;
+    margin-left:-865px; margin-top:-10px;
 }
 
 .btn-start {
 	padding: 0.5rem 2rem;
 	font-size: 1.125rem;
 	border-radius: 999px;
-    margin-left:-400px; margin-top:-180px;
+    margin-left:-650px; margin-top:-180px;
 }
