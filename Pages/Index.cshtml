@@ -8,12 +8,42 @@
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 }
 
-<div class="home-hero d-flex align-items-center justify-content-center">
-    <div class="text-center">
-        <h1 class="hero-title">NBA DATA</h1>
-        <p class="hero-sub">Busca y compara estadísticas de jugadores de la NBA</p>
-        <p class="mt-4">
-            <a class="btn btn-lg btn-primary btn-start" href="/Compare">EMPEZAR</a>
-        </p>
+<div class="home-hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">NBA DATA</h1>
+            <p class="hero-subtitle">Descubre y compara estadísticas de tus jugadores favoritos de la NBA</p>
+            <p class="hero-description">
+                Explora las estadísticas más completas de los jugadores de la NBA. 
+                Compara rendimiento, analiza tendencias y descubre quiénes son los mejores en cada categoría.
+            </p>
+        </div>
+        
+        <div class="hero-actions">
+            <div class="search-section">
+                <h3 class="search-title">Buscar Jugador</h3>
+                <div class="search-container">
+                    <input type="text" id="playerSearch" class="form-control search-input" 
+                           placeholder="Escribe el nombre de un jugador..." autocomplete="off">
+                    <div id="searchSuggestions" class="search-suggestions"></div>
+                </div>
+                <p class="search-hint">Empieza escribiendo para ver sugerencias</p>
+            </div>
+            
+            <div class="action-buttons">
+                <a class="btn btn-primary btn-lg action-btn" href="/Compare">
+                    <i class="fas fa-balance-scale"></i>
+                    Comparar Jugadores
+                </a>
+                <a class="btn btn-outline-light btn-lg action-btn" href="/Players">
+                    <i class="fas fa-users"></i>
+                    Ver Todos los Jugadores
+                </a>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/player-search.js" asp-append-version="true"></script>
+}

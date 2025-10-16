@@ -1,8 +1,87 @@
 .player-photo {
-  width: 10px;          
-  height: 10px;
+  width: 200px;          
+  height: 250px;
   border-radius: 8px;
   object-fit: cover;
   display: block;
-  margin-bottom: 0.75rem;
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.comparison-photo {
+  width: 180px;          
+  height: 220px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Estilos para la página de comparación */
+.comparison-container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.comparison-header {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.player-info {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.player-info:hover {
+  transform: translateY(-5px);
+}
+
+.stats-comparison {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.table-success {
+  background-color: #d4edda !important;
+  border-color: #c3e6cb !important;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+}
+
+.player-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.player-details {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .comparison-photo {
+    width: 150px;
+    height: 180px;
+  }
+  
+  .player-name {
+    font-size: 1.25rem;
+  }
 }

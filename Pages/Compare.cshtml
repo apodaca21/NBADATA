@@ -2,93 +2,203 @@
 @model NBADATA.Pages.CompareModel
 
 @*Pagina para comparar dos jugadores*@
-<h2>Comparar jugadores</h2>
+<div class="comparison-container">
+    <div class="container-fluid">
+        <div class="comparison-header">
+            <h2 class="text-center mb-4">Comparar Jugadores de la NBA</h2>
 
-<form method="get" class="row g-2 mb-4">
-    <div class="col-auto">
-        <input class="form-control" name="player1" placeholder="Jugador 1 (nombre o parte)" value="@Model.Player1" />
-    </div>
-    <div class="col-auto">
-        <input class="form-control" name="player2" placeholder="Jugador 2 (nombre o parte)" value="@Model.Player2" />
-    </div>
-    <div class="col-auto">
-        <button class="btn btn-primary" type="submit">Buscar</button>
-    </div>
-</form>
+            <form method="get" class="row g-2 mb-4 justify-content-center">
+                <div class="col-md-4">
+                    <div class="search-container">
+                        <input class="form-control search-input" name="player1" placeholder="Jugador 1 (nombre o parte)" value="@Model.Player1" autocomplete="off" />
+                        <div class="search-suggestions" id="suggestions1"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="search-container">
+                        <input class="form-control search-input" name="player2" placeholder="Jugador 2 (nombre o parte)" value="@Model.Player2" autocomplete="off" />
+                        <div class="search-suggestions" id="suggestions2"></div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" type="submit">Comparar</button>
+                </div>
+            </form>
+        </div>
 
-@* Mostrar dos tablas (una por cada jugador) que muestren las estadisticas *@
-<div class="row">
-    <div class="col-md-6">
-        <h4>Jugador 1</h4>
-        @if (Model.Result1 == null)
-        {
-            <div class="alert alert-warning">No se encontró Jugador 1</div>
-        }
-        else
-        {
-                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl1))
-                {
-                    <img src="@Model.PhotoUrl1" alt="@Model.Result1.FullName" class="player-photo img-fluid mb-3" onerror="this.style.display='none'" />
-                }
-
-            <table class="table table-striped">
-                <tbody>
-                    @foreach (var prop in Model.Props)
+    @if (Model.Result1 != null && Model.Result2 != null)
+    {
+        @* Encabezado con fotos de los jugadores *@
+        <div class="row mb-4">
+            <div class="col-md-6 text-center">
+                <div class="player-info">
+                    @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl1))
                     {
-                        var val = prop.GetValue(Model.Result1);
-                        string text = val switch
-                        {
-                            null => "-",
-                            DateTime dt => dt.ToShortDateString(),
-                            decimal d => d.ToString("0.##"),
-                            double d2 => d2.ToString("0.##"),
-                            float f => f.ToString("0.##"),
-                            _ => val?.ToString() ?? "-"
-                        };
-                        <tr>
-                            <th>@prop.Name</th>
-                            <td>@text</td>
-                        </tr>
+                        <img src="@Model.PhotoUrl1" alt="@Model.Result1.FullName" class="comparison-photo" onerror="this.style.display='none'" />
                     }
-                </tbody>
-            </table>
-        }
-    </div>
-    <div class="col-md-6">
-        <h4>Jugador 2</h4>
-
-        @if (Model.Result2 == null)
-        {
-            <div class="alert alert-warning">No se encontró Jugador 2</div>
-        }
-        else
-        {
-                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl2))
-                {
-                    <img src="@Model.PhotoUrl2" alt="@Model.Result2.FullName" class="player-photo img-fluid mb-3" onerror="this.style.display='none'" />
-                }
-
-            <table class="table table-striped">
-                <tbody>
-                    @foreach (var prop in Model.Props)
+                    <h4 class="player-name">@Model.Result1.FullName</h4>
+                    <p class="player-details">@Model.Result1.Team • @Model.Result1.Position</p>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="player-info">
+                    @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl2))
                     {
-                        var val = prop.GetValue(Model.Result2);
-                        string text = val switch
-                        {
-                            null => "-",
-                            DateTime dt => dt.ToShortDateString(),
-                            decimal d => d.ToString("0.##"),
-                            double d2 => d2.ToString("0.##"),
-                            float f => f.ToString("0.##"),
-                            _ => val?.ToString() ?? "-"
-                        };
-                        <tr>
-                            <th>@prop.Name</th>
-                            <td>@text</td>
-                        </tr>
+                        <img src="@Model.PhotoUrl2" alt="@Model.Result2.FullName" class="comparison-photo" onerror="this.style.display='none'" />
                     }
-                </tbody>
-            </table>
-        }
+                    <h4 class="player-name">@Model.Result2.FullName</h4>
+                    <p class="player-details">@Model.Result2.Team • @Model.Result2.Position</p>
+                </div>
+            </div>
+        </div>
+
+        @* Tabla comparativa de estadísticas *@
+        <div class="stats-comparison">
+            <h4 class="text-center mb-3">Comparación de Estadísticas</h4>
+            <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 25%;">Estadística</th>
+                                <th style="width: 37.5%;" class="text-center">
+                                    @Model.Result1.FullName
+                                    <br><small class="text-muted">@Model.Result1.Team</small>
+                                </th>
+                                <th style="width: 37.5%;" class="text-center">
+                                    @Model.Result2.FullName
+                                    <br><small class="text-muted">@Model.Result2.Team</small>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prop in Model.Props)
+                            {
+                                var val1 = prop.GetValue(Model.Result1);
+                                var val2 = prop.GetValue(Model.Result2);
+                                
+                                string text1 = val1 switch
+                                {
+                                    null => "-",
+                                    DateTime dt => dt.ToShortDateString(),
+                                    decimal d => d.ToString("0.##"),
+                                    double d2 => d2.ToString("0.##"),
+                                    float f => f.ToString("0.##"),
+                                    _ => val1?.ToString() ?? "-"
+                                };
+                                
+                                string text2 = val2 switch
+                                {
+                                    null => "-",
+                                    DateTime dt => dt.ToShortDateString(),
+                                    decimal d => d.ToString("0.##"),
+                                    double d2 => d2.ToString("0.##"),
+                                    float f => f.ToString("0.##"),
+                                    _ => val2?.ToString() ?? "-"
+                                };
+
+                                // Determinar qué valor es mejor para estadísticas numéricas
+                                string class1 = "";
+                                string class2 = "";
+                                if (IsNumericStat(prop.Name) && val1 != null && val2 != null)
+                                {
+                                    if (IsHigherBetter(prop.Name))
+                                    {
+                                        if (Convert.ToDouble(val1) > Convert.ToDouble(val2))
+                                        {
+                                            class1 = "table-success";
+                                        }
+                                        else if (Convert.ToDouble(val2) > Convert.ToDouble(val1))
+                                        {
+                                            class2 = "table-success";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToDouble(val1) < Convert.ToDouble(val2))
+                                        {
+                                            class1 = "table-success";
+                                        }
+                                        else if (Convert.ToDouble(val2) < Convert.ToDouble(val1))
+                                        {
+                                            class2 = "table-success";
+                                        }
+                                    }
+                                }
+
+                                <tr>
+                                    <th class="bg-light">@GetDisplayName(prop.Name)</th>
+                                    <td class="@class1 text-center fw-bold">@text1</td>
+                                    <td class="@class2 text-center fw-bold">@text2</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                @if (Model.Result1 == null && !string.IsNullOrWhiteSpace(Model.Player1))
+                {
+                    <div class="alert alert-warning text-center">
+                        <h5>Jugador 1 no encontrado</h5>
+                        <p>No se encontró ningún jugador que coincida con "@Model.Player1"</p>
+                    </div>
+                }
+            </div>
+            <div class="col-md-6">
+                @if (Model.Result2 == null && !string.IsNullOrWhiteSpace(Model.Player2))
+                {
+                    <div class="alert alert-warning text-center">
+                        <h5>Jugador 2 no encontrado</h5>
+                        <p>No se encontró ningún jugador que coincida con "@Model.Player2"</p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
     </div>
 </div>
+
+@functions {
+    private bool IsNumericStat(string propName)
+    {
+        var numericStats = new[] { "Pts", "Reb", "Ast", "Stl", "Blk", "Tov", "FgPct", "TpPct", "FtPct" };
+        return numericStats.Contains(propName);
+    }
+
+    private bool IsHigherBetter(string propName)
+    {
+        var lowerBetterStats = new[] { "Tov" };
+        return !lowerBetterStats.Contains(propName);
+    }
+
+    private string GetDisplayName(string propName)
+    {
+        return propName switch
+        {
+            "FullName" => "Nombre Completo",
+            "Team" => "Equipo",
+            "Position" => "Posición",
+            "HeightCm" => "Altura (cm)",
+            "WeightKg" => "Peso (kg)",
+            "BirthDate" => "Fecha de Nacimiento",
+            "Pts" => "Puntos por Partido",
+            "Reb" => "Rebotes por Partido",
+            "Ast" => "Asistencias por Partido",
+            "Stl" => "Robos por Partido",
+            "Blk" => "Bloqueos por Partido",
+            "Tov" => "Pérdidas por Partido",
+            "FgPct" => "Porcentaje de Tiro de Campo",
+            "TpPct" => "Porcentaje de Triple",
+            "FtPct" => "Porcentaje de Tiro Libre",
+            _ => propName
+        };
+    }
+}
+
+@section Scripts {
+    <script src="~/js/compare-search.js" asp-append-version="true"></script>
+}
