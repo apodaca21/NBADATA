@@ -1,0 +1,14 @@
+@model AuthDemoApp.Models.User
+
+<h1>Mi cuenta</h1>
+
+<ul>
+    <li>Nombre: @Model.FullName</li>
+    <li>Usuario: @Model.Username</li>
+    <li>Correo: @Model.Email</li>
+    <li>Nacimiento: @Model.BirthDate.ToString("yyyy-MM-dd")</li>
+</ul>
+
+<form method="post" action="/Auth/Logout">
+    <button type="submit">Cerrar sesión</button>
+</form>
